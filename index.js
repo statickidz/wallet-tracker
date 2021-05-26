@@ -28,14 +28,17 @@ web3.eth.subscribe('pendingTransactions', (err, txHash) => {
       if (transaction && (transaction.from === address || transaction.to === address)) {
         const result = decoder.decodeData(transaction.input);
         if (result && result.inputs && result.inputs[2]) {
-          const routes = result.inputs[2];
+          const routes = result.inputs.find(route => Array.isArray(route));
           const tokenAddress = `0x${routes[routes.length - 1]}`;
+
+          await open(`https://poocoin.app/tokens/${tokenAddress}`);
+          await open(`https://exchange.pancakeswap.finance/#/swap?outputCurrency=${tokenAddress}`);
 
           console.log(`🚩 TransactionHash: ${transaction.hash}`);
           console.log(`🚩 Token Address: ${tokenAddress}`);
 
-          await open(`https://poocoin.app/tokens/${tokenAddress}`);
-          await open(`https://exchange.pancakeswap.finance/#/swap?outputCurrency=${tokenAddress}`);
+          await web3.eth.clearSubscriptions();
+          process.exit(1);
         }
       }
     });
