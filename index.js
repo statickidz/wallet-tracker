@@ -4,15 +4,15 @@ const open = require('open');
 const InputDataDecoder = require('ethereum-input-data-decoder');
 const decoder = new InputDataDecoder(`${__dirname}/abi.json`);
 
-// testnet
-//const web3 = new Web3('wss://bsc.getblock.io/testnet/?api_key=00854c01-32fa-4602-b14a-7b0b2e54650e');
+const network = process.env.NETWORK ? process.env.NETWORK : 'mainnet';
+const address = process.env.WATCH_ADDRESS;
 
-// mainnet 
-const web3 = new Web3('wss://bsc.getblock.io/mainnet/?api_key=00854c01-32fa-4602-b14a-7b0b2e54650e');
+const web3 = new Web3(`wss://bsc.getblock.io/${network}/?api_key=00854c01-32fa-4602-b14a-7b0b2e54650e`);
 
-let address = process.env.WATCH_ADDRESS;
+let firstTxFound = false;
 
 console.log(`🟢 Watching ${address} ...`);
+
 web3.eth.subscribe('pendingTransactions', (err, txHash) => {
   if (err) {
     console.log(`🔴 Error retrieving network pending transactions`);
@@ -31,14 +31,15 @@ web3.eth.subscribe('pendingTransactions', (err, txHash) => {
           const routes = result.inputs.find(route => Array.isArray(route));
           const tokenAddress = `0x${routes[routes.length - 1]}`;
 
-          await open(`https://poocoin.app/tokens/${tokenAddress}`);
-          await open(`https://exchange.pancakeswap.finance/#/swap?outputCurrency=${tokenAddress}`);
-
+          console.log(`----------------------------------------------------------------------------`);
           console.log(`🚩 TransactionHash: ${transaction.hash}`);
           console.log(`🚩 Token Address: ${tokenAddress}`);
 
-          await web3.eth.clearSubscriptions();
-          process.exit(1);
+          if (!firstTxFound) {
+            firstTxFound = true;
+            await open(`https://poocoin.app/tokens/${tokenAddress}`);
+            await open(`https://exchange.pancakeswap.finance/#/swap?outputCurrency=${tokenAddress}`);
+          }
         }
       }
     });
