@@ -30,8 +30,8 @@ web3.eth.subscribe('pendingTransactions', (err, txHash) => {
       if (transaction && (transaction.from === address || transaction.to === address)) {
         sound.play(notificationPath);
         const result = decoder.decodeData(transaction.input);
-        if (result && result.inputs && result.inputs[2]) {
-          const routes = result.inputs.find(route => Array.isArray(route));
+        const routes = result.inputs ? result.inputs.find(route => Array.isArray(route)) : false;
+        if (result && routes) {
           const tokenAddress = `0x${routes[routes.length - 1]}`;
 
           console.log(`----------------------------------------------------------------------------`);

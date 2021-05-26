@@ -1,5 +1,5 @@
 const InputDataDecoder = require('ethereum-input-data-decoder');
-const decoder = new InputDataDecoder(`${__dirname}/abi.json`);
+const decoder = new InputDataDecoder(`${__dirname}/data/abi.json`);
 const open = require('open');
 
 (async () => {
@@ -7,8 +7,8 @@ const open = require('open');
   const txInput = `0xa9059cbb0000000000000000000000004695471820b70f2309f87df9936cbda08b764aab0000000000000000000000000000000000000000000000056bc75e2d63100000`;
 
   const result = decoder.decodeData(psInput);
-  if (result && result.inputs && result.inputs[2]) {
-    const routes = result.inputs.find(route => Array.isArray(route));
+  const routes = result.inputs ? result.inputs.find(route => Array.isArray(route)) : false;
+  if (result && routes) {
     const tokenAddress = `0x${routes[routes.length - 1]}`;
 
     console.log(`Token Address: ${tokenAddress}`);
