@@ -2,7 +2,9 @@ require('dotenv').config();
 const Web3 = require('web3');
 const open = require('open');
 const InputDataDecoder = require('ethereum-input-data-decoder');
-const decoder = new InputDataDecoder(`${__dirname}/abi.json`);
+const decoder = new InputDataDecoder(`${__dirname}/data/abi.json`);
+const sound = require('sound-play');
+const notificationPath = `${__dirname}/sound/notification.mp3`;
 
 const network = process.env.NETWORK ? process.env.NETWORK : 'mainnet';
 const address = process.env.WATCH_ADDRESS;
@@ -26,6 +28,7 @@ web3.eth.subscribe('pendingTransactions', (err, txHash) => {
         throw (err);
       }
       if (transaction && (transaction.from === address || transaction.to === address)) {
+        sound.play(notificationPath);
         const result = decoder.decodeData(transaction.input);
         if (result && result.inputs && result.inputs[2]) {
           const routes = result.inputs.find(route => Array.isArray(route));
