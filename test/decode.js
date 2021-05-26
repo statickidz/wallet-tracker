@@ -1,5 +1,5 @@
 const InputDataDecoder = require('ethereum-input-data-decoder');
-const decoder = new InputDataDecoder(`${__dirname}/data/abi.json`);
+const decoder = new InputDataDecoder(`${__dirname}/../data/abi.json`);
 const open = require('open');
 
 (async () => {
