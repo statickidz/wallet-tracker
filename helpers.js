@@ -1,6 +1,7 @@
 const InputDataDecoder = require('ethereum-input-data-decoder');
 const decoder = new InputDataDecoder(`${__dirname}/data/abi.json`);
 const Web3 = require('web3');
+const { readFileSync } = require('fs');
 
 /**
  * Checks if the given string is an address
@@ -81,6 +82,20 @@ const getPoocoinTokenURL = function (token) {
 };
 
 /**
+* Get BscScan Transaction URL
+*
+* @method getBscScanTxURL
+* @param {String}
+* @return {String}
+*/
+const getBscScanTxURL = function (txHash) {
+  if (process.env.NETWORK === 'testnet') {
+    return `https://testnet.bscscan.com/tx/${txHash}`;
+  }
+  return `https://bscscan.com/tx/${txHash}`;
+};
+
+/**
 * Get Web3 connection
 *
 * @method getWeb3Connection
@@ -89,6 +104,16 @@ const getPoocoinTokenURL = function (token) {
 const getWeb3Connection = function () {
   const network = process.env.NETWORK ? process.env.NETWORK : 'mainnet';
   return new Web3(`wss://bsc.getblock.io/${network}/?api_key=00854c01-32fa-4602-b14a-7b0b2e54650e`);
+};
+
+/**
+* Get wallets to watch
+*
+* @method getWallets
+* @return {Array} address
+*/
+const getWallets = function () {
+  return readFileSync('.wallets').toString().replace(/\r\n/g, '\n').split('\n');
 };
 
 /**
@@ -102,9 +127,13 @@ const isPancakeSwapV1Router = function (router) {
   return router.toLowerCase() === '0x05ff2b0db69458a0750badebc4f9e13add608c7f';
 };
 
-exports.isAddress = isAddress;
-exports.isPancakeSwapV1Router = isPancakeSwapV1Router;
-exports.getPancakeInputToken = getPancakeInputToken;
-exports.getPancakeTokenURL = getPancakeTokenURL;
-exports.getPoocoinTokenURL = getPoocoinTokenURL;
-exports.getWeb3Connection = getWeb3Connection;
+module.exports = {
+  isAddress: isAddress,
+  isPancakeSwapV1Router: isPancakeSwapV1Router,
+  getPancakeInputToken: getPancakeInputToken,
+  getPancakeTokenURL: getPancakeTokenURL,
+  getPoocoinTokenURL: getPoocoinTokenURL,
+  getWeb3Connection: getWeb3Connection,
+  getWallets: getWallets,
+  getBscScanTxURL: getBscScanTxURL,
+}
