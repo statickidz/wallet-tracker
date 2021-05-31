@@ -14,12 +14,15 @@ const {
 
 const wallets = getWallets();
 const web3 = getWeb3Connection();
-const shouldOpenPoocoin = process.env.OPEN_POOCOIN ? process.env.OPEN_POOCOIN : true;
-const shouldOpenPancake = process.env.OPEN_POOCOIN ? process.env.OPEN_POOCOIN : true;
+const shouldOpenPoocoin = /^true$/i.test(process.env.OPEN_POOCOIN.toLowerCase());
+const shouldOpenPancake = /^true$/i.test(process.env.OPEN_PANCAKE.toLowerCase());
+const shouldPlaySound = /^true$/i.test(process.env.PLAY_SOUND.toLowerCase());
 
 let firstTxFound = false;
 
 console.log(`🟢 Watching`, wallets);
+
+console.log(shouldOpenPancake, shouldOpenPoocoin, shouldPlaySound, process.env.PLAY_SOUND);
 
 web3.eth.subscribe('pendingTransactions', (err, txHash) => {
   if (err) {
@@ -35,10 +38,10 @@ web3.eth.subscribe('pendingTransactions', (err, txHash) => {
       }
       if (transaction && (wallets.includes(transaction.from) || wallets.includes(transaction.to))) {
 
-        sound.play(notificationPath);
-
         const isPancakeV1 = isPancakeSwapV1Router(transaction.to);
         const tokenAddress = getPancakeInputToken(transaction.input);
+
+        if (shouldPlaySound) sound.play(notificationPath);
 
         if (tokenAddress) {
           const poocoinURL = getPoocoinTokenURL(tokenAddress);

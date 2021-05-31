@@ -103,7 +103,11 @@ const getBscScanTxURL = function (txHash) {
 */
 const getWeb3Connection = function () {
   const network = process.env.NETWORK ? process.env.NETWORK : 'mainnet';
-  return new Web3(`wss://bsc.getblock.io/${network}/?api_key=00854c01-32fa-4602-b14a-7b0b2e54650e`);
+  const apiKey = process.env.GETBLOCK_API_KEY;
+  if (!apiKey) {
+    throw ('GetBlock.io API Key needed');
+  }
+  return new Web3(`wss://bsc.getblock.io/${network}/?api_key=${apiKey}`);
 };
 
 /**
