@@ -3,7 +3,7 @@ const decoder = new InputDataDecoder('data/abi.json');
 import Web3 from 'web3';
 import { readFileSync } from 'fs';
 import sound from 'sound-play';
-import { dirname, join, resolve } from 'path';
+import { join, resolve } from 'path';
 
 /**
  * Checks if the given string is an address
