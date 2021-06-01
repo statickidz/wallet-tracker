@@ -1,4 +1,5 @@
 {
+  "type": "module",
   "dependencies": {
     "dotenv": "^10.0.0",
     "ethereum-input-data-decoder": "^0.3.2",
@@ -12,5 +13,8 @@
   },
   "devDependencies": {
     "jest": "^27.0.1"
+  },
+  "engines": {
+    "node": ">=14"
   }
 }

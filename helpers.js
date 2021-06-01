@@ -1,7 +1,9 @@
-const InputDataDecoder = require('ethereum-input-data-decoder');
-const decoder = new InputDataDecoder(`${__dirname}/data/abi.json`);
-const Web3 = require('web3');
-const { readFileSync } = require('fs');
+import InputDataDecoder from 'ethereum-input-data-decoder';
+const decoder = new InputDataDecoder('data/abi.json');
+import Web3 from 'web3';
+import { readFileSync } from 'fs';
+import sound from 'sound-play';
+import { dirname, join, resolve } from 'path';
 
 /**
  * Checks if the given string is an address
@@ -10,7 +12,7 @@ const { readFileSync } = require('fs');
  * @param {String} address the given HEX adress
  * @return {Boolean}
 */
-const isAddress = function (address) {
+export const isAddress = function (address) {
   if (!/^(0x)?[0-9a-f]{40}$/i.test(address)) {
     // check if it has the basic requirements of an address
     return false;
@@ -30,7 +32,7 @@ const isAddress = function (address) {
 * @param {String} address the given HEX adress
 * @return {Boolean}
 */
-const isChecksumAddress = function (address) {
+export const isChecksumAddress = function (address) {
   // Check each case
   address = address.replace('0x', '');
   const addressHash = sha3(address.toLowerCase());
@@ -50,7 +52,7 @@ const isChecksumAddress = function (address) {
 * @param {TransactionInput}
 * @return {Token}
 */
-const getPancakeInputToken = function (input) {
+export const getPancakeInputToken = function (input) {
   const result = decoder.decodeData(input);
   const routes = result.inputs ? result.inputs.find(route => Array.isArray(route)) : false;
   return routes ? `0x${routes[routes.length - 1]}` : '';
@@ -63,7 +65,7 @@ const getPancakeInputToken = function (input) {
 * @param {String} token the given token
 * @return {String}
 */
-const getPancakeTokenURL = function (token, v1 = false) {
+export const getPancakeTokenURL = function (token, v1 = false) {
   if (process.env.NETWORK === 'testnet') {
     return `https://${v1 ? 'v1' : ''}pancake.kiemtienonline360.com/#/swap?outputCurrency=${token}`;
   }
@@ -77,7 +79,7 @@ const getPancakeTokenURL = function (token, v1 = false) {
 * @param {String} token the given token
 * @return {String}
 */
-const getPoocoinTokenURL = function (token) {
+export const getPoocoinTokenURL = function (token) {
   return `https://poocoin.app/tokens/${token}`;
 };
 
@@ -88,7 +90,7 @@ const getPoocoinTokenURL = function (token) {
 * @param {String}
 * @return {String}
 */
-const getBscScanTxURL = function (txHash) {
+export const getBscScanTxURL = function (txHash) {
   if (process.env.NETWORK === 'testnet') {
     return `https://testnet.bscscan.com/tx/${txHash}`;
   }
@@ -101,7 +103,7 @@ const getBscScanTxURL = function (txHash) {
 * @method getWeb3Connection
 * @return {Web3}
 */
-const getWeb3Connection = function () {
+export const getWeb3Connection = function () {
   const network = process.env.NETWORK ? process.env.NETWORK : 'mainnet';
   const apiKey = process.env.GETBLOCK_API_KEY;
   if (!apiKey) {
@@ -116,8 +118,20 @@ const getWeb3Connection = function () {
 * @method getWallets
 * @return {Array} address
 */
-const getWallets = function () {
+export const getWallets = function () {
   return readFileSync('.wallets').toString().replace(/\r\n/g, '\n').split('\n');
+};
+
+/**
+* Play sound
+*
+* @method playSound
+* @param {String} sound name
+* @return {Promise} 
+*/
+export const playSound = async function (name) {
+  const filePath = join(resolve(), `sound/${name}.mp3`);
+  return await sound.play(filePath);
 };
 
 /**
@@ -127,17 +141,6 @@ const getWallets = function () {
  * @param {Transaction}
  * @return {Boolean}
 */
-const isPancakeSwapV1Router = function (router) {
+export const isPancakeSwapV1Router = function (router) {
   return router.toLowerCase() === '0x05ff2b0db69458a0750badebc4f9e13add608c7f';
 };
-
-module.exports = {
-  isAddress: isAddress,
-  isPancakeSwapV1Router: isPancakeSwapV1Router,
-  getPancakeInputToken: getPancakeInputToken,
-  getPancakeTokenURL: getPancakeTokenURL,
-  getPoocoinTokenURL: getPoocoinTokenURL,
-  getWeb3Connection: getWeb3Connection,
-  getWallets: getWallets,
-  getBscScanTxURL: getBscScanTxURL,
-}

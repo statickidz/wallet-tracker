@@ -1,8 +1,6 @@
-require('dotenv').config();
-const open = require('open');
-const sound = require('sound-play');
-const notificationPath = `${__dirname}/sound/notification.mp3`;
-const {
+import dotenv from 'dotenv';
+import open from 'open';
+import {
   isPancakeSwapV1Router,
   getPancakeTokenURL,
   getPancakeInputToken,
@@ -10,8 +8,10 @@ const {
   getWeb3Connection,
   getWallets,
   getBscScanTxURL,
-} = require('./helpers');
+  playSound,
+} from './helpers.js';
 
+dotenv.config();
 const wallets = getWallets();
 const web3 = getWeb3Connection();
 const shouldOpenPoocoin = /^true$/i.test(process.env.OPEN_POOCOIN.toLowerCase());
@@ -21,9 +21,6 @@ const shouldPlaySound = /^true$/i.test(process.env.PLAY_SOUND.toLowerCase());
 let firstTxFound = false;
 
 console.log(`🟢 Watching`, wallets);
-
-console.log(shouldOpenPancake, shouldOpenPoocoin, shouldPlaySound, process.env.PLAY_SOUND);
-
 web3.eth.subscribe('pendingTransactions', (err, txHash) => {
   if (err) {
     console.log(`🔴 Error retrieving network pending transactions`);
@@ -41,7 +38,7 @@ web3.eth.subscribe('pendingTransactions', (err, txHash) => {
         const isPancakeV1 = isPancakeSwapV1Router(transaction.to);
         const tokenAddress = getPancakeInputToken(transaction.input);
 
-        if (shouldPlaySound) sound.play(notificationPath);
+        if (shouldPlaySound) playSound('notification');
 
         if (tokenAddress) {
           const poocoinURL = getPoocoinTokenURL(tokenAddress);
