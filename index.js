@@ -20,14 +20,19 @@ const shouldPlaySound = /^true$/i.test(process.env.PLAY_SOUND.toLowerCase());
 
 let firstTxFound = false;
 
-console.log(`🟢 Watching`, wallets);
-web3.eth.subscribe('pendingTransactions', (err, txHash) => {
+const subscription = web3.eth.subscribe('pendingTransactions', (err, txHash) => {
   if (err) {
     console.log(`🔴 Error retrieving network pending transactions`);
     throw (err);
   }
 })
-  .on('data', function (txHash) {
+  .on('connected', (subscriptionId) => {
+    console.log(`🟢 Watching`, wallets);
+  })
+  .on('error', (subscriptionId) => {
+    console.log(`🟢 Watching`, wallets);
+  })
+  .on('data', (txHash) => {
     return web3.eth.getTransaction(txHash, async (err, transaction) => {
       if (err) {
         console.log(`🔴 ${txHash} not valid transaction`);
@@ -60,4 +65,10 @@ web3.eth.subscribe('pendingTransactions', (err, txHash) => {
         }
       }
     });
-  });
+  })
+  .on('error', console.error);
+
+process.on('SIGINT', () => {
+  subscription.unsubscribe((error, success) => { });
+  process.exit();
+});
