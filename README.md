@@ -10,11 +10,11 @@ npm install
 
 ## Usage
 
-- Rename `.env.sample` to `.env`.
+- Copy `.env.sample` and rename to `.env`.
 
 - Customize `.env` preferences and replace GetBlock.io API Key with yours (default is a limited one only for development).
 
-- Rename `.wallets.sample` to `.wallets`.
+- Copy `.wallets.sample` and rename to `.wallets`.
 
 - Edit `.wallets` and add all the wallets to watch line-by-line like in the example below:
 
