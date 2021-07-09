@@ -1,4 +1,6 @@
-# Pumperox
+# Wallet Tracker
+
+Track a list of crypto wallets to get notified when a new transaction is being processed.
 
 ## Installation
 
@@ -8,7 +10,9 @@ npm install
 
 ## Usage
 
-- Rename `.env.sample` to `.env` and customize your preferences.
+- Rename `.env.sample` to `.env`.
+
+- Customize `.env` preferences and replace GetBlock.io API Key with yours (default is a limited one only for development).
 
 - Rename `.wallets.sample` to `.wallets`.
 
@@ -19,7 +23,7 @@ npm install
 0xf60d6c152e89edf22a70de490f3be1fa309ca779
 ```
 
-- Start watching with `npm start`
+- Start tracking with `npm start`
 
 ## Options
 
